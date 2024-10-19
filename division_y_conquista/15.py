@@ -14,3 +14,5 @@ def raiz(funcion, a, b, tol=1e-6):
         return raiz(funcion, a,m)
     else:
         return raiz(funcion, m,b)
+    
+# O(logn)

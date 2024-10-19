@@ -37,3 +37,4 @@ def dividir_y_encontrar_desubicado(arr, inicio, final):
     return None
 
 
+#Complejidad: O(n)

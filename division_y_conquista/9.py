@@ -18,3 +18,5 @@ def mas_mitad(arr, ini, fin):
 
 def masmitad(arr):
     return mas_mitad(arr, 0, len(arr)-1)
+
+# O(nlogn)

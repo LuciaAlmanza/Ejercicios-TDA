@@ -17,3 +17,5 @@ def _integer_square_root(n, start, end):
         return _integer_square_root(n, start, mid)
         
     return _integer_square_root(n, mid+1, end)
+
+# O(logn)

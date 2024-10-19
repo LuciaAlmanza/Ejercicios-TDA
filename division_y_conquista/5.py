@@ -44,3 +44,5 @@ def merge(arr, inicio, mitad, final):
     for indice, val in enumerate(aux):
         arr[inicio + indice] = val
     return arr
+
+# O(nlogn)

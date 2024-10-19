@@ -31,6 +31,7 @@ def encontrar_joya_recursivo(joyas, inicio, fin):
         # Si las dos mitades pesan lo mismo, la joya verdadera está en la parte restante
         return inicio + 2 * mitad
     
+#O(logn)
 
 #Explicacion: la recurcion la hice asi por si el arreglo tiene longuitud impar. Sino tendriamos dos casos, si es par o impar
 # y seria mucho mas largo. Es dificil de entender pero simplifica el codigo.

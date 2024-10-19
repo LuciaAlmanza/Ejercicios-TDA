@@ -31,3 +31,5 @@ def dividr_y_obtener_indice_primer_cero(arr, inicio, final):
         return dividr_y_obtener_indice_primer_cero(arr, inicio, medio)
     else:
         return dividr_y_obtener_indice_primer_cero(arr, medio+1, final)
+    
+#Complejidad: O(log n)    

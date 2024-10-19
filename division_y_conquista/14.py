@@ -17,3 +17,5 @@ def encontrar_contagiado(personas):
     else:
        
         return encontrar_contagiado(grupo_der)
+    
+# O(logn)

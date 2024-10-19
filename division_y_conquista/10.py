@@ -19,3 +19,5 @@ def mas_de_la_mitad_rec(arr):
 def mas_de_la_mitad(arr):
     candidato = mas_de_la_mitad_rec(arr)
     return None if candidato is None or arr.count(candidato) <= len(arr) // 2 else candidato
+
+# O(n)

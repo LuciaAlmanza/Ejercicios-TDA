@@ -63,3 +63,5 @@ def puntos_mas_cercanos(P):
     Px = sorted(P, key=lambda p: p[0])
     Py = sorted(P, key=lambda p: p[1])
     return puntos_cerc_rec(Px, Py)
+
+# O(nlogn)

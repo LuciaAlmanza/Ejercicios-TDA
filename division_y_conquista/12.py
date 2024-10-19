@@ -10,3 +10,5 @@ def _alternar(arr, ini, fin):
 
 def alternar(arr):
     return _alternar(arr, 0, len(arr)-1)
+
+# O(nlogn)

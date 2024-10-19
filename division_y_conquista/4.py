@@ -10,3 +10,5 @@ def posicion_pico(arr, inicio, final):
         return posicion_pico(arr, medio+1, final)
     if arr[medio - 1] > arr[medio] and arr[medio] > arr[medio + 1]:
         return posicion_pico(arr, inicio, medio)
+    
+# O(logn)

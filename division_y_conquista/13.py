@@ -47,3 +47,5 @@ def hallar_max_subarray(arr, start, mid, end):
             der_max = i
 
     return izq_sum + der_sum, izq_max, der_max
+
+# O(nlogn)

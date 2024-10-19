@@ -58,3 +58,5 @@ def contar_inversiones(A, B):
     n = len(B)
     temp_arr = [0]*n
     return merge_sort_and_count(indices_B, temp_arr, 0, n-1)
+
+# O(nlogn)

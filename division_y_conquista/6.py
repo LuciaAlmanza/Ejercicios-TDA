@@ -23,3 +23,5 @@ def karatsuba(a, b):
     t1 = x1y1 * (10**(2*m))
     t2 = (p - x1y1 - x0y0) * (10**m)
     return t1 + t2 + x0y0
+
+# O(n^og_2_3 )
