@@ -15,57 +15,58 @@
 def contar_superados(jugadores):
     # Función principal que inicia el proceso
     resultado = [0] * len(jugadores)
-    _contar_superados(jugadores, resultado, 0, len(jugadores) - 1)
+    arr_temp = [0] * len(jugadores)
+    _contar_superados(jugadores, resultado, 0, len(jugadores) - 1,arr_temp)
     return {jugadores[i][0]: resultado[i] for i in range(len(jugadores))}
 
-def _contar_superados(jugadores, resultado, inicio, fin):
+def _contar_superados(jugadores, resultado, inicio, fin,arr_temp):
     if inicio >= fin:
         return
 
     mitad = (inicio + fin) // 2
 
     # Contar en las mitades izquierda y derecha
-    _contar_superados(jugadores, resultado, inicio, mitad)
-    _contar_superados(jugadores, resultado, mitad + 1, fin)
+    _contar_superados(jugadores, resultado, inicio, mitad,arr_temp)
+    _contar_superados(jugadores, resultado, mitad + 1, fin,arr_temp)
 
     # Contar rivales superados durante la fusión
-    fusionar(jugadores, resultado, inicio, mitad, fin)
+    fusionar(jugadores, resultado, inicio, mitad, fin;arr_temp)
 
-def fusionar(jugadores, resultado, inicio, mitad, fin):
-    # Crear una copia de la parte de la lista que se está fusionando
-    izquierda = jugadores[inicio:mitad + 1]
-    derecha = jugadores[mitad + 1:fin + 1]
 
-    i = 0  # Índice para la mitad izquierda
-    j = 0  # Índice para la mitad derecha
+def fusionar(jugadores, resultado, inicio, mitad, fin,arr_temp):
+
+    i = inicio  # Índice para la mitad izquierda
+    j = mitad+1  # Índice para la mitad derecha
     k = inicio  # Índice para la lista original
 
     # Contador de cuántos han sido superados en la parte derecha
     contador_superados = 0
 
-    while i < len(izquierda) and j < len(derecha):
-        if izquierda[i][1] < derecha[j][1]:  # Si el jugador de la izquierda tiene mejor posición
-            resultado[inicio + i] += contador_superados
-            jugadores[k] = izquierda[i]
+    while i <= mitad and j <= fin:
+        if jugadores[i][1] < jugadores[j][1]:  # Si el jugador de la izquierda tiene mejor posición
+            resultado[i] += contador_superados
+            arr_temp[k] = jugadores[i]
             i += 1
         else:
             contador_superados += 1
-            jugadores[k] = derecha[j]
+            arr_temp[k] = jugadores[j]
             j += 1
         k += 1
 
     # Copiar cualquier resto de la izquierda
-    while i < len(izquierda):
-        resultado[inicio + i] += contador_superados
-        jugadores[k] = izquierda[i]
+    while i <= mitad:
+        resultado[i] += contador_superados
+        arr_temp[k] = jugadores[i]
         i += 1
         k += 1
 
     # Copiar cualquier resto de la derecha
-    while j < len(derecha):
-        jugadores[k] = derecha[j]
+    while j <= fin:
+        arr_temp[k] = jugadores[j]
         j += 1
         k += 1
+    for i in range(inicio, fin + 1):
+        jugadores[i] = arr_temp[i]
 
 # O(nlogn)
 
