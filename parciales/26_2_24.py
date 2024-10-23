@@ -70,3 +70,22 @@ def fusionar(jugadores, resultado, inicio, mitad, fin,arr_temp):
 
 # O(nlogn)
 
+# 3. El K-core de un grafo es el subgrafo del mismo en el cuál todos los vértices tienen grados mayor o igual a K. Implementar
+# un algoritmo greedy que dado un grafo y un valor K devuelva el K-core del grafo (es decir, el subgrafo en el cuál todos
+# los vértices involucrados tienen grado mayor o igual a K, en dicho subgrafo). Indicar y justificar la complejidad del
+# algoritmo implementado. Justificar por qué se trata de un algoritmo greedy.
+
+def k_core(grafo, K):
+    cambios = True
+    while cambios:
+        cambios = False
+        vertices = grafo.obtener_vertices()
+        for v in vertices:
+            if grafo.obtener_grado(v) < K:
+                for vecino in grafo.adyacentes(v):
+                    grafo.borrar_arista(v, vecino)
+                grafo.borrar_vertice(v)
+                cambios = True
+    return grafo
+
+#O(n+m).
