@@ -89,3 +89,29 @@ def k_core(grafo, K):
     return grafo
 
 #O(n+m).
+
+# 4.4. Implementar un algoritmo que resuelva el problema de 3-SAT: determinar si, dado un grupo de cláusulas de 3 términos
+# (pudiendo ser complementos de variables), existe alguna asignación de valores de las variables tal que la disyunción de
+# todas las cláusulas (que son todas conjunciones) evalúan a true.
+
+def es_satisfecho(clausulas, asignacion):
+    for clausula in clausulas:
+        if not any((literal if literal > 0 else not literal) for literal in clausula):
+            return False
+    return True
+
+def backtrack(clausulas, variables, index, asignacion):
+    if index == len(variables):
+        return es_satisfecho(clausulas, asignacion)
+
+    # Asignar True a la variable actual
+    asignacion[index] = True
+    if backtrack(clausulas, variables, index + 1, asignacion):
+        return True
+
+    # Asignar False a la variable actual
+    asignacion[index] = False
+    if backtrack(clausulas, variables, index + 1, asignacion):
+        return True
+
+    return False

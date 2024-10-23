@@ -32,3 +32,27 @@ def obtener_max_independent_set(arbol, raiz):
     return conjunto_indep
 
 # O(n)
+
+# Implementar un algoritmo que dado un grafo, obtenga el clique de mayor tamaño del mismo.
+def es_clique(grafo, conjunto):
+    for i in range(len(conjunto)):
+        for j in range(i + 1, len(conjunto)):
+            if not grafo.son_vecinos(conjunto[i], conjunto[j]):
+                return False
+    return True
+
+def backtrack(grafo, vertices, index, conjunto_actual, mejor_clique):
+    if es_clique(grafo, conjunto_actual):
+        if len(conjunto_actual) > len(mejor_clique[0]):
+            mejor_clique[0] = conjunto_actual.copy()
+
+    for i in range(index, len(vertices)):
+        conjunto_actual.append(vertices[i])
+        backtrack(grafo, vertices, i + 1, conjunto_actual, mejor_clique)
+        conjunto_actual.pop()  # Deshacer la elección
+
+def encontrar_clique_maxima(grafo):
+    vertices = grafo.obtener_vertices()
+    mejor_clique = [[]]  # Almacena el clique de mayor tamaño
+    backtrack(grafo, vertices, 0, [], mejor_clique)
+    return mejor_clique[0]

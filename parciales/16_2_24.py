@@ -33,3 +33,34 @@ def max_ganancia(farmacos, L):
             L = 0  # Capacidad alcanzada
 
     return total_ganancia, cantidad_tomada
+
+# 3.Implementar un algoritmo que reciba un grafo no dirigido y un número k, y devuelva un ciclo de tamaño exactamente k
+# del grafo, si es que existe.
+
+def backtrack(grafo, ciclo, actual, k):
+    if len(ciclo) == k:
+        # Verificar si el último vértice se conecta al primero
+        if ciclo[0] in grafo.adyacentes(actual):
+            return ciclo + [ciclo[0]]  # Retorna el ciclo completo
+        return None
+
+    for vecino in grafo.adyacentes(actual):
+        if vecino not in ciclo:  # Evitar vértices repetidos
+            ciclo.append(vecino)  # Añadir vértice al ciclo
+            resultado = backtrack(grafo, ciclo, vecino, k)
+            if resultado:  # Si se encontró un ciclo válido
+                return resultado
+            ciclo.pop()  # Retroceder
+
+    return None  # No se encontró ciclo
+
+
+def encontrar_ciclo(grafo, k):
+    # Probar desde cada vértice del grafo
+    for vertice in grafo.obtener_vertices():
+        ciclo_inicial = [vertice]
+        resultado = backtrack(grafo, ciclo_inicial, vertice, k)
+        if resultado:
+            return resultado
+
+    return None  
