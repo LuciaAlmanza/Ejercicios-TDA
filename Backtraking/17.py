@@ -2,11 +2,12 @@ from grafo import Grafo
 def submarinos(matriz):
     g = Grafo()
     submarinos = []
+    # construimos el grafo de las posiciones de los submarinos, en este caso los vertices son las coordenadas de cada cuadradito del tablero
     for i in range(len(matriz)):
-        for j in range(len(matriz[i])):
+        for j in range(len(matriz[i])): #si hay un subamrino lo appendeo
             if matriz[i][j]: submarinos.append((i, j))
-            g.agregar_vertice((i,j))
-            if i-2 >= 0:
+            g.agregar_vertice((i,j)) # agrego coordenadas lo agrego como vertice
+            if i-2 >= 0: #agrego conexiones con celdas vecinas que pueden llegar a ser iluminadas osea de radio de 2 y luego de radio de 1
                 g.agregar_arista((i-2, j), (i, j))
                 if j-1 >= 0:g.agregar_arista((i-2, j-1), (i, j))
                 if j-2 >= 0: g.agregar_arista((i-2, j-2), (i, j))
