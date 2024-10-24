@@ -64,3 +64,23 @@ def encontrar_ciclo(grafo, k):
             return resultado
 
     return None  
+
+# En clase vimos una solución óptima del problema del cambio utilizando programación dinámica. Ahora planteamos un
+# problema similar: Implementar un algoritmo que dado un set de monedas posibles y una cantidad de cambio a dar,
+# devuelva la cantidad de formas diferentes que hay para dar dicho cambio. El algoritmo a implementar debe ser
+# también por programación dinámica. Indicar y justificar la complejidad del algoritmo implementado. Importante: antes
+# de escribir código, escribir (y describir) la ecuación de recurrencia.
+
+# dp[i]=dp[i]+dp[i−mj]
+
+def contar_formas_monedas(monedas, C):
+    # Inicializamos el arreglo DP
+    dp = [0] * (C + 1)
+    dp[0] = 1  # Hay exactamente una forma de dar 0 de cambio (no usar monedas)
+    
+    # Para cada moneda, actualizamos el arreglo dp
+    for moneda in monedas:
+        for i in range(moneda, C + 1):
+            dp[i] += dp[i - moneda]
+    
+    return dp[C]

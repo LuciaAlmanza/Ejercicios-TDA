@@ -56,3 +56,42 @@ def tsp_nearest_neighbor(grafo, inicio):
 # No se me ocurre ningun contraejemplo la verdad
 
 # O(V^2)
+
+# Dado un número n, mostrar la cantidad más económica (con menos términos) de escribirlo como una suma de cuadrados,
+# utilizando programación dinámica. Indicar y justificar la complejidad del algoritmo implementado (cuidado con esto, es
+# fácil tentarse a dar una cota más alta de lo correcto). Implementar un algoritmo que permita reconstruir la solución.
+# Aclaración: siempre es posible escribir a n como suma de n términos de la forma 1
+# 2
+# , por lo que siempre existe solución.
+
+# Sin embargo, la expresión 10 = 32 + 12
+
+# es una manera más económica de escribirlo para n = 10, pues sólo tiene dos
+
+# términos.
+
+#dp[i]=min(dp[i−j^2]+1)para todos los j tales que j^2 ≤ i
+
+def min_squares(n):
+    # Paso 1: Crear la tabla para almacenar los resultados
+    dp = [float('inf')] * (n + 1)
+    dp[0] = 0  # 0 términos para el número 0
+    
+    # Paso 2: Calcular el número mínimo de cuadrados para cada número
+    for i in range(1, n + 1):
+        j = 1
+        while j * j <= i:
+            dp[i] = min(dp[i], dp[i - j * j] + 1)
+            j += 1
+            
+    # Paso 3: Reconstrucción de la solución
+    result = []
+    temp = n
+    while temp > 0:
+        for j in range(1, int(temp**0.5) + 1):
+            if dp[temp] == dp[temp - j * j] + 1:
+                result.append(j * j)
+                temp -= j * j
+                break
+                
+    return dp[n], result 

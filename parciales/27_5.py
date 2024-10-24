@@ -33,3 +33,33 @@ def encontrar_dominating_set_minimo(grafo):
     mejor_conjunto = [float('inf'), []]  # [suma mínima, conjunto]
     backtrack(grafo, vertices, 0, [], mejor_conjunto, 0)
     return mejor_conjunto
+
+# Sea G un grafo dirigido “camino” (las aristas son de la forma (vi
+
+# , vi−1)). Cada vertice tiene un valor (positivo).
+# Implementar un algoritmo que, utilizando programación dinámica, obtenga el Dominating Set de suma mínima
+# dentro de un grafo de dichas características. Dar la ecuación de recurrencia correspondiente al problema. Indicar
+# y justificar la complejidad del algoritmo implementado. Indicar y justificar la complejidad espacial del algoritmo
+# implementado, y si hay una optimización que permita consumir menos espacio.
+
+# dp[i]=min(dp[i−1],dp[i−2]+wi)
+
+def dominating_set_min_sum(weights):
+    n = len(weights)
+    if n == 0:
+        return 0
+    if n == 1:
+        return weights[0]
+    if n == 2:
+        return min(weights[0], weights[1])
+    
+    # Inicializar las variables
+    prev2 = weights[0]  # dp[i-2]
+    prev1 = min(weights[0], weights[1])  # dp[i-1]
+    
+    for i in range(2, n):
+        current = min(prev1, prev2 + weights[i])
+        prev2 = prev1
+        prev1 = current
+
+    return prev1

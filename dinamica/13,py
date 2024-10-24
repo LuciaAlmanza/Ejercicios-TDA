@@ -1,0 +1,27 @@
+def bodegon_dinamico(P, W):
+    n = len(P)
+    
+    # dp[j] guarda el máximo número de lugares ocupados usando hasta la capacidad j
+    dp = [0] * (W + 1)
+    
+    # Tabla para reconstrucción
+    grupo_incluido = [[False] * (W + 1) for _ in range(n)]
+    
+    # Llenado de la tabla dp
+    for i in range(n):
+        for j in range(W, P[i] - 1, -1):
+            if dp[j] < dp[j - P[i]] + P[i]:
+                dp[j] = dp[j - P[i]] + P[i]
+                grupo_incluido[i][j] = True
+
+    # Reconstrucción de la solución
+    resultado = []
+    capacidad_restante = W
+    
+    for i in range(n - 1, -1, -1):
+        if grupo_incluido[i][capacidad_restante]:
+            resultado.append(P[i])
+            capacidad_restante -= P[i]
+    
+    # Invertimos el resultado para devolverlo en el orden original de entrada
+    return resultado[::-1]

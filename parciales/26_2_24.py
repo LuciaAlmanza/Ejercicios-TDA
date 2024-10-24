@@ -115,3 +115,58 @@ def backtrack(clausulas, variables, index, asignacion):
         return True
 
     return False
+
+# Se tiene una matriz de n × m casilleros, en la cual empezamos en la posición (0, 0) (arriba a la izquierda) y queremos
+# llegar a la posición (n − 1, m − 1) (abajo a la derecha), pero solamente nos podemos mover hacia abajo o hacia la
+# derecha, y comenzamos con una vida inicial V . Cada casillero puede estar vacío, o tener una trampa. En los casilleros
+# que hay trampas se nos reduce la vida en una cantidad Ti conocida (dependiente de cada casillero).
+# Diseñar un algoritmo de programación dinámica que dados todos los datos necesarios, permita determinar la cantidad
+# de vida máxima con la que podemos llegar a (n − 1, m − 1). Implementar también una forma de poder reconstruir dicho
+# camino. Indicar la complejidad del algoritmo propuesto, en tiempo y espacio.
+
+# dp[i][j]=max(dp[i−1][j]−Ti,j ,dp[i][j−1]−Ti,j)
+
+def max_life_path(matrix, V):
+    n = len(matrix)
+    m = len(matrix[0])
+    
+    # dp[i][j] will store the maximum life at position (i, j)
+    dp = [[-1] * m for _ in range(n)]
+    parent = [[None] * m for _ in range(n)]
+    
+    # Initialize the starting position
+    dp[0][0] = V - matrix[0][0]  # Reduce life by T[0][0]
+
+    # Fill the dp table
+    for i in range(n):
+        for j in range(m):
+            if i == 0 and j == 0:
+                continue
+            
+            # Calculate life from the top
+            if i > 0 and dp[i-1][j] >= 0:  # Check if coming from above is possible
+                life_from_top = dp[i-1][j] - matrix[i][j]
+                if life_from_top > dp[i][j]:  # We want the max life
+                    dp[i][j] = life_from_top
+                    parent[i][j] = (i-1, j)
+
+            # Calculate life from the left
+            if j > 0 and dp[i][j-1] >= 0:  # Check if coming from the left is possible
+                life_from_left = dp[i][j-1] - matrix[i][j]
+                if life_from_left > dp[i][j]:  # We want the max life
+                    dp[i][j] = life_from_left
+                    parent[i][j] = (i, j-1)
+
+    # Maximum life at the bottom-right corner
+    max_life = dp[n-1][m-1]
+
+    # Reconstruct the path if reachable
+    path = []
+    if max_life >= 0:
+        x, y = n-1, m-1
+        while (x, y) is not None:
+            path.append((x, y))
+            x, y = parent[x][y] if parent[x][y] else (None, None)
+        path.reverse()  # Reverse the path to start from the beginning
+
+    return max_life, path
