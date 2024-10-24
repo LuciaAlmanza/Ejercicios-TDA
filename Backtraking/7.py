@@ -1,59 +1,40 @@
-from grafo import Grafo
+mov_x = [2, 1, -1, -2, -2, -1, 1, 2]
+mov_y = [1, 2, 2, 1, -1, -2, -2, -1]
 
-def crear_grafo_tablero(n):
-    grafo = Grafo(dirigido=False)
+def es_valido(x, y, tablero, n):
+    # Verifica si la posición está dentro del tablero y no ha sido visitada
+    return 0 <= x < n and 0 <= y < n and tablero[x][y] == -1
 
-    # Agregar vértices para cada casilla del tablero
-    for i in range(n):
-        for j in range(n):
-            grafo.agregar_vertice((i, j))
+def recorrer_caballo_util(tablero, curr_x, curr_y, mov_i, n):
+    # Si el caballo ha visitado todas las casillas, devuelve True
+    if mov_i == n * n:
+        return True
 
-    # Definir los movimientos del caballo
-    mov_x = [2, 1, -1, -2, -2, -1, 1, 2]
-    mov_y = [1, 2, 2, 1, -1, -2, -2, -1]
+    # Intenta todos los movimientos posibles desde la posición actual del caballo
+    for i in range(8):
+        new_x = curr_x + mov_x[i]
+        new_y = curr_y + mov_y[i]
 
-    # Agregar aristas según los movimientos del caballo
-    for i in range(n):
-        for j in range(n):
-            for k in range(8):
-                new_x = i + mov_x[k]
-                new_y = j + mov_y[k]
-                if 0 <= new_x < n and 0 <= new_y < n:
-                    grafo.agregar_arista((i, j), (new_x, new_y))
+        if es_valido(new_x, new_y, tablero, n):
+            # Marca el nuevo movimiento con el número de pasos actuales
+            tablero[new_x][new_y] = mov_i
+            # Recursivamente trata de construir el resto del recorrido
+            if recorrer_caballo_util(tablero, new_x, new_y, mov_i + 1, n):
+                return True
+            # Si el movimiento no es válido, deshacer el paso (backtrack)
+            tablero[new_x][new_y] = -1
 
-    return grafo
-
-def es_ciclo_hamiltoniano(grafo, vertice_inicial, visitados, camino):
-    camino.append(vertice_inicial)
-    visitados.add(vertice_inicial)
-
-    # Si todos los vértices han sido visitados
-    if len(visitados) == len(grafo.obtener_vertices()):
-        # Verifica si hay un camino de vuelta al inicio
-        if vertice_inicial in grafo.adyacentes(camino[0]):
-            return True, camino
-
-    for vertice in grafo.adyacentes(vertice_inicial):
-        if vertice not in visitados:
-            exito, solucion = es_ciclo_hamiltoniano(grafo, vertice, visitados, camino)
-            if exito:
-                return True, solucion
-
-    # Backtrack
-    camino.pop()
-    visitados.remove(vertice_inicial)
-    return False, []
+    return False
 
 def knight_tour(n):
-    grafo = crear_grafo_tablero(n)
-    vertice_inicial = (0, 0)  # Comienza en la esquina superior izquierda
+    # Inicializa el tablero con -1 (indica que la casilla no ha sido visitada)
+    tablero = [[-1 for _ in range(n)] for _ in range(n)]
 
-    visitados = set()
-    camino = []
+    # El caballo empieza en la esquina superior izquierda (0, 0)
+    tablero[0][0] = 0  # El primer paso del caballo
 
-    existe_solucion, camino_solucion = es_ciclo_hamiltoniano(grafo, vertice_inicial, visitados, camino)
-
-    if existe_solucion:
-        return camino_solucion
+    # Llama a la función recursiva para resolver el problema
+    if recorrer_caballo_util(tablero, 0, 0, 1, n):
+        return tablero
     else:
         return None

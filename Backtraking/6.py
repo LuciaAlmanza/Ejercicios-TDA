@@ -1,49 +1,49 @@
-#aviso que no lo pude porbar qx rpl no me agarra el grafo :( pero deberiiiaa funcionar
+def resolver_sudoku(tablero):
+    if _sudoku(tablero):
+        return tablero
+    return None
 
-def construir_grafo_sudoku(tablero):
-    grafo = Grafo(dirigido=False)
-    for i in range(9):
-        for j in range(9):
-            if tablero[i][j] == 0:  # Solo para celdas vacías
-                for k in range(9):
-                    if k != j:  # Fila
-                        grafo.agregar_arista((i, j), (i, k))
-                    if k != i:  # Columna
-                        grafo.agregar_arista((i, j), (k, j))
-                # Caja 3x3
-                box_row_start = (i // 3) * 3
-                box_col_start = (j // 3) * 3
-                for box_i in range(box_row_start, box_row_start + 3):
-                    for box_j in range(box_col_start, box_col_start + 3):
-                        if (box_i, box_j) != (i, j):
-                            grafo.agregar_arista((i, j), (box_i, box_j))
-    return grafo
+def _sudoku(tablero):
+    i, j = find_empty(tablero)
+    if i is None:
+        return True  # No hay más celdas vacías, el Sudoku está resuelto
 
-def es_valido(grafo, colores, vertice, color):
-    for vecino in grafo.adyacentes(vertice):
-        if colores.get(vecino) == color:
-            return False
-    return True
+    for num in range(1, 10):
+        if valid(tablero, num, (i, j)):
+            tablero[i][j] = num
 
-def backtracking(grafo, colores, indice=0):
-    if indice == len(grafo.obtener_vertices()):
-        return True  # Se han coloreado todos los vértices
-
-    vertice = grafo.obtener_vertices()[indice]
-    for color in range(1, 10):  # Colores del 1 al 9
-        if es_valido(grafo, colores, vertice, color):
-            colores[vertice] = color
-            if backtracking(grafo, colores, indice + 1):
+            if _sudoku(tablero):
                 return True
-            del colores[vertice]  # Retroceder
+
+            # Backtracking
+            tablero[i][j] = 0
 
     return False
 
-def resolver_sudoku_con_grafo(tablero):
-    grafo = construir_grafo_sudoku(tablero)
-    colores = {}
-    if backtracking(grafo, colores):
-        for (i, j), color in colores.items():
-            tablero[i][j] = color
-        return tablero
-    return None
+def valid(bo, num, pos):
+    # Verifica la fila
+    for i in range(9):
+        if bo[pos[0]][i] == num and pos[1] != i:
+            return False
+
+    # Verifica la columna
+    for i in range(9):
+        if bo[i][pos[1]] == num and pos[0] != i:
+            return False
+
+    # Verifica la caja 3x3
+    box_x = pos[1] // 3
+    box_y = pos[0] // 3
+    for i in range(box_y * 3, box_y * 3 + 3):
+        for j in range(box_x * 3, box_x * 3 + 3):
+            if bo[i][j] == num and (i, j) != pos:
+                return False
+
+    return True
+
+def find_empty(bo):
+    for i in range(9):
+        for j in range(9):
+            if bo[i][j] == 0:
+                return i, j  # Fila, columna de la primera celda vacía
+    return None, None
