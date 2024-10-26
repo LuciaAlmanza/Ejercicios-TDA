@@ -1,25 +1,35 @@
-# cada campaña publicitaria i de la forma (Gi, Ci)
 def carlitos(c_publicitaria, P):
-    n = len(c_publicitaria)
-    
-    # Matriz dp donde dp[i][p] almacena la máxima ganancia posible con i campañas y presupuesto p
-    dp = [[0] * (P + 1) for _ in range(n + 1)]
-    
-    # Llenado de la tabla dp
-    for i in range(1, n + 1):
-        G_i, C_i = c_publicitaria[i - 1]
-        for p in range(P + 1):
-            if C_i > p:
-                dp[i][p] = dp[i - 1][p]  # No podemos incluir la campaña i
+    #separo el arreglo en dos para mas placer
+    costos=[c_publicitaria[i][1] for i in range(0,len(c_publicitaria))]
+    ganancias=[c_publicitaria[i][0] for i in range(0,len(c_publicitaria))]
+    tam_arreglo=len(c_publicitaria)
+    #repito lo de la mochi, una matriz donde el tamaño de sus col lo determina el P
+    #y las filas por la cantidad de elementos
+    optimos=[[0 for _ in range(P+1)] for _ in range(tam_arreglo+1)]
+
+    for fila in range(1,tam_arreglo+1):
+        for columna in range(1,P+1):
+            #esto vendría a significar, si el costo del item iterado es menor al presupuesto actual
+            #entonces puedo ver de calcular un optimo para las dimensiones dadas
+            #Aplico, entonces, la ec de recurrencia de la mochi
+            if costos[fila-1]<=columna:
+                optimos[fila][columna]=max(optimos[fila-1][columna],optimos[fila-1][columna-costos[fila-1]]+ganancias[fila-1])
             else:
-                dp[i][p] = max(dp[i - 1][p], G_i + dp[i - 1][p - C_i])
-    
-    # Reconstrucción de las campañas seleccionadas
-    resultado = []
-    p = P
-    for i in range(n, 0, -1):
-        if dp[i][p] != dp[i - 1][p]:  # Si la campaña i fue seleccionada
-            resultado.append(c_publicitaria[i - 1])
-            p -= c_publicitaria[i - 1][1]  # Restamos el costo de la campaña seleccionada
-    
-    return resultado[::-1]
+                #si entro aca, significa que el costo de la campaña actual es muy grande para el P dado
+                #entonces el optimo sería no realizar la campaña y que su optimo sea la sol anterior
+                optimos[fila][columna]=optimos[fila-1][columna]
+
+    return getRes(optimos,tam_arreglo,P,c_publicitaria,costos)
+
+
+def getRes(optimos,tam_arreglo,P,c_publicitaria,costos):
+    res=[]
+    for i in range(tam_arreglo,0,-1):
+        #si los optimos de la actual y el anterior difieren, significa que el optimo de la campaña actual la considera 
+        if optimos[i][P]!=optimos[i-1][P]:
+            res.append(c_publicitaria[i-1])
+            #voy actualizando el presupuesto en base a la campaña que itero
+            P-=costos[i-1]
+
+    res.reverse()
+    return res

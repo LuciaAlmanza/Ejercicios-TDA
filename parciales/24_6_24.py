@@ -95,3 +95,32 @@ def min_squares(n):
                 break
                 
     return dp[n], result 
+
+# 1. Juan es ambicioso pero también algo vago. Dispone de varias ofertas de trabajo diarias, pero no quiere trabajar
+# tres días seguidos. Se tiene la información de la ganancia del día i (Gi), para cada día. Implementar un modelo de
+# programación lineal que maximice el monto a ganar por Juan, sabiendo que no aceptará trabajar tres días seguidos.
+
+def maximizar_ganancias(ganancias):
+    n = len(ganancias)  # Número de días
+
+    # Variables binarias que indican si Juan trabaja en el día i
+    x = pulp.LpVariable.dicts("x", range(n), cat="Binary")
+
+    # Crear el problema de optimización
+    problema = pulp.LpProblem("Maximizar_Ganancias", pulp.LpMaximize)
+
+    # Función objetivo: maximizar la ganancia total
+    problema += pulp.lpSum(g ganancias[i] * x[i] for i in range(n)), "Ganancia_Total"
+
+    # Restricciones para evitar trabajar tres días seguidos
+    for i in range(n - 2):
+        problema += x[i] + x[i + 1] + x[i + 2] <= 2, f"Restriccion_Tres_Dias_{i}"
+
+    # Resolver el problema
+    problema.solve()
+
+    # Obtener el resultado: días en los que Juan trabaja
+    dias_trabajo = [i for i in range(n) if pulp.value(x[i]) == 1]
+    ganancia_total = pulp.value(problema.objective)
+
+    return dias_trabajo, ganancia_total

@@ -63,3 +63,33 @@ def dominating_set_min_sum(weights):
         prev1 = current
 
     return prev1
+
+# 3. Realizar un modelo de programación lineal que obtenga el mínimo Dominating Set de un Grafo no dirigido. En dicho
+# grafo, cada vértice tiene un valor (positivo), y se quiere que dicho Dominating Set sea el de mínima suma de dichos
+# valores.
+
+def minimum_dominating_set(grafo, valores):
+    vertices = grafo.obtener_vertices()
+    n = len(vertices)  # Número de vértices
+
+    # Variable binaria que indica si el vértice v está en el Dominating Set
+    x = pulp.LpVariable.dicts("x", vertices, cat="Binary")
+
+    # Crear el problema de optimización
+    problema = pulp.LpProblem("Minimum_Dominating_Set", pulp.LpMinimize)
+
+    # Función objetivo: minimizar la suma de los valores de los vértices seleccionados
+    problema += pulp.lpSum(valores[v] * x[v] for v in vertices), "Suma_Valores"
+
+    # Restricción de dominación
+    for u in vertices:
+        # Cada vértice u debe estar dominado por sí mismo o por uno de sus vecinos
+        problema += x[u] + pulp.lpSum(x[v] for v in grafo.adyacentes(u)) >= 1, f"Dominacion_{u}"
+
+    # Resolver el problema
+    problema.solve()
+
+    # Obtener el resultado: vértices en el Dominating Set
+    resultado = [v for v in vertices if pulp.value(x[v]) == 1]
+
+    return resultado, pulp.value(problema.objective)
