@@ -10,20 +10,27 @@
 # dado un grafo, obtener el mínimo Vertex Cover del mismo. Indicar la complejidad del algoritmo implementado, dar un
 # contraejemplo para el algoritmo implementado y justificar por qué el algoritmo implementado es un algoritmo greedy.
 
-def vertex_cover(self):
-    cover = set()
-    aristas = self.obtener_aristas()
+def vertex_cover(grafo):
+    cubierto = set()
+    aristas = set()
+
+    # Obtener todas las aristas del grafo
+    for v in grafo.obtener_vertices():
+        for w in grafo.adyacentes(v):
+            if (w, v) not in aristas:  # Asegurarse de no duplicar la arista
+                aristas.add((v, w))
 
     while aristas:
-            # Elegir una arista arbitraria
-       
-        v, w = aristas[0]
-        cover.add(v)
-        cover.add(w)
-            # Eliminar aristas incidentes a u y v
-        aristas = [(u, z) for u, z in aristas if u != v and u != w and z != v and z != w]
+        # Elegir una arista arbitraria
+        v, w = aristas.pop()
+        # Agregar ambos vértices al conjunto cubierto
+        cubierto.add(v)
+        cubierto.add(w)
 
-    return cover
+        # Eliminar todas las aristas cubiertas por v y w
+        aristas = {e for e in aristas if e[0] != v and e[1] != v and e[0] != w and e[1] != w}
+
+    return cubierto
 
 #O(m) numero de aristas del grafo
 

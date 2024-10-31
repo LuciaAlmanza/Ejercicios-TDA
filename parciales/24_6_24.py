@@ -23,35 +23,39 @@ def potencia(b, n):
 # ¿El algoritmo obtiene siempre la solución óptima? Si es así, justificar detalladamente, sino dar un contraejemplo. Indicar
 # y justificar la complejidad del algoritmo implementado. Justificar por qué se trata de un algoritmo greedy.
 
-def tsp_nearest_neighbor(grafo, inicio):
-    n = len(grafo)  # Cantidad de vértices
-    visitados = [False] * n  # Seguimiento de los vértices visitados
-    camino = [inicio]  # Iniciar el camino en el vértice de inicio
-    costo_total = 0  # Costo acumulado del recorrido
-    actual = inicio  # Vértice actual
-    visitados[inicio] = True  # Marcar el vértice inicial como visitado
-
-    for _ in range(n - 1):  # Repetir n-1 veces para visitar todos los vértices
-        siguiente = -1
-        menor_distancia = float('inf')
-
-        # Buscar el vecino no visitado más cercano
-        for vecino in range(n):
-            if not visitados[vecino] and grafo[actual][vecino] < menor_distancia:
-                menor_distancia = grafo[actual][vecino]
+def tsp_vecino_mas_cercano(grafo, inicio):
+    visitados = set()
+    camino = [inicio]
+    actual = inicio
+    total_cost = 0
+    visitados.add(inicio)
+    
+    # Visitar cada nodo no visitado seleccionando el vecino más cercano
+    while len(visitados) < len(grafo.obtener_vertices()):
+        siguiente = None
+        min_peso = float('inf')
+        
+        # Buscar el vecino más cercano no visitado
+        for vecino in grafo.adyacentes(actual):
+            if vecino not in visitados and grafo.peso_arista(actual, vecino) < min_peso:
                 siguiente = vecino
-
-        # Moverse al vecino más cercano
+                min_peso = grafo.peso_arista(actual, vecino)
+        
+        if siguiente is None:
+            break  # No quedan más vértices para visitar (debería no suceder en grafo completo)
+        
+        # Añadir al camino y actualizar costo total
         camino.append(siguiente)
-        costo_total += menor_distancia
-        visitados[siguiente] = True
+        total_cost += min_peso
+        visitados.add(siguiente)
         actual = siguiente
 
-    # Volver al vértice de inicio
-    costo_total += grafo[actual][inicio]
-    camino.append(inicio)
-
-    return camino, costo_total
+    # Volver al inicio para cerrar el ciclo
+    if grafo.estan_unidos(actual, inicio):
+        camino.append(inicio)
+        total_cost += grafo.peso_arista(actual, inicio)
+    
+    return camino, total_cost
 
 # No se me ocurre ningun contraejemplo la verdad
 

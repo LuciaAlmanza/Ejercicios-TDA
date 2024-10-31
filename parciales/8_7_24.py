@@ -43,33 +43,30 @@ def longest_path_ordered_graph(vertices, edges):
 # justificar la complejidad del algoritmo implementado. Justificar por qué se trata de un algoritmo greedy. Indicar si el
 # algoritmo siempre da solución óptima. Si lo es, explicar detalladamente, sino dar un contraejemplo.
 
-def obtener_hijos(arbol, nodo, padre):
-    return [hijo for hijo in arbol.obtener_adyacentes[nodo] if hijo != padre]
+def dfs(grafo, v, visitados, conjunto_independiente):
+    visitados.add(v)
+    conjunto_independiente.add(v)
 
-def max_independent_set(arbol, nodo, padre, conjunto_indep, visitados):
-    # Marcar el nodo como visitado
-    visitados.add(nodo)
-    incluir = True
+    for vecino in grafo.adyacentes(v):
+        if vecino not in visitados:
+            dfs(grafo, vecino, visitados, conjunto_independiente)
 
-    # Revisar los hijos del nodo actual
-    for hijo in arbol.obtener_hijos(arbol,nodo, padre):
-        if hijo not in visitados:
-            # Recursión sobre los hijos
-            max_independent_set(arbol, hijo, nodo, conjunto_indep, visitados)
+    # Eliminar los vecinos del conjunto independiente
+    for vecino in grafo.adyacentes(v):
+        if vecino in conjunto_independiente:
+            conjunto_independiente.remove(vecino)
 
-            # Si algún hijo está en el conjunto independiente, no podemos incluir el nodo actual
-            if hijo in conjunto_indep:
-                incluir = False
 
-    # Incluir el nodo si ninguno de sus hijos está en el conjunto independiente
-    if incluir:
-        conjunto_indep.add(nodo)
+def independent_set_maximo(grafo):
+    vertices = grafo.obtener_vertices()
+    conjunto_independiente = set()
+    visitados = set()
 
-def obtener_max_independent_set(arbol, raiz):
-    conjunto_indep = set()
-    visitados = set()  # Usamos un conjunto para almacenar los nodos ya visitados
-    max_independent_set(arbol, raiz, None, conjunto_indep, visitados)
-    return conjunto_indep
+    # Empezar el DFS desde un vértice arbitrario si hay vertices en el grafo
+    if vertices:
+        dfs(grafo, vertices[0], visitados, conjunto_independiente)
+
+    return conjunto_independiente
 
 # O(n)
 
