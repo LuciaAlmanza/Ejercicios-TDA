@@ -94,27 +94,58 @@ def k_core(grafo, K):
 # (pudiendo ser complementos de variables), existe alguna asignación de valores de las variables tal que la disyunción de
 # todas las cláusulas (que son todas conjunciones) evalúan a true.
 
-def es_satisfecho(clausulas, asignacion):
+def resolver_3SAT(clausulas):
+    variables = obtener_variables(clausulas)
+    asignacion = {}
+    return backtrack(clausulas, variables, asignacion, 0)
+
+def obtener_variables(clausulas):
+    variables = set()
     for clausula in clausulas:
-        if not any((literal if literal > 0 else not literal) for literal in clausula):
-            return False
-    return True
+        for literal in clausula:
+            variables.add(abs(literal))  # Añadimos solo el valor absoluto de la variable
+    return list(variables)
 
-def backtrack(clausulas, variables, index, asignacion):
-    if index == len(variables):
-        return es_satisfecho(clausulas, asignacion)
-
-    # Asignar True a la variable actual
-    asignacion[index] = True
-    if backtrack(clausulas, variables, index + 1, asignacion):
+def backtrack(clausulas, variables, asignacion, indice):
+    # Si ya asignamos todas las variables, verificamos si la fórmula es satisfactible
+    if indice == len(variables):
+        return verificar_clausulas(clausulas, asignacion)
+    
+    # Seleccionamos la siguiente variable a asignar
+    var = variables[indice]
+    
+    # Intentamos asignar True a la variable y probamos si la fórmula se cumple
+    asignacion[var] = True
+    if backtrack(clausulas, variables, asignacion, indice + 1):
         return True
-
-    # Asignar False a la variable actual
-    asignacion[index] = False
-    if backtrack(clausulas, variables, index + 1, asignacion):
+    
+    # Intentamos asignar False a la variable y probamos si la fórmula se cumple
+    asignacion[var] = False
+    if backtrack(clausulas, variables, asignacion, indice + 1):
         return True
-
+    
+    # Deshacer la asignación para este nivel de backtracking
+    del asignacion[var]
     return False
+
+def verificar_clausulas(clausulas, asignacion):
+    for clausula in clausulas:
+        satisfactible = False
+        for literal in clausula:
+            var = abs(literal)
+            valor_literal = asignacion.get(var, False)
+            # Si el literal es negativo, invertimos su valor
+            if literal < 0:
+                valor_literal = not valor_literal
+            # Si algún literal en la cláusula es verdadero, la cláusula es satisfactible
+            if valor_literal:
+                satisfactible = True
+                break
+        # Si encontramos una cláusula que no es satisfactible, la fórmula no es válida
+        if not satisfactible:
+            return False
+    # Todas las cláusulas son satisfactibles
+    return True
 
 # Se tiene una matriz de n × m casilleros, en la cual empezamos en la posición (0, 0) (arriba a la izquierda) y queremos
 # llegar a la posición (n − 1, m − 1) (abajo a la derecha), pero solamente nos podemos mover hacia abajo o hacia la

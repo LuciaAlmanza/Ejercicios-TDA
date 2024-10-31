@@ -1,9 +1,8 @@
 from grafo import Grafo
 
 def contar_ordenamientos(grafo):
-    vertices = grafo.obtener_vertices()
     orden_actual = []
-    visitados = {v: False for v in vertices}
+    visitados = set()  # Usar un conjunto en lugar de un diccionario
     total_ordenamientos = [0]  # Usar una lista para contar por referencia
 
     # Inicia el proceso de backtracking
@@ -12,17 +11,17 @@ def contar_ordenamientos(grafo):
     return total_ordenamientos[0]
 
 def backtrack(orden_actual, visitados, grafo, total_ordenamientos):
-    if len(orden_actual) == len(visitados):
+    if len(orden_actual) == len(grafo.obtener_vertices()):
         total_ordenamientos[0] += 1
         return
 
-    for v in visitados.keys():
-        if not visitados[v] and es_valido_para_agregar(v, orden_actual, grafo):
-            visitados[v] = True
+    for v in grafo.obtener_vertices():
+        if v not in visitados and es_valido_para_agregar(v, orden_actual, grafo):
+            visitados.add(v)  # Marcar como visitado usando un conjunto
             orden_actual.append(v)
             backtrack(orden_actual, visitados, grafo, total_ordenamientos)  # Recurre
             orden_actual.pop()  # Deshacer la acción
-            visitados[v] = False  # Marcar como no visitado
+            visitados.remove(v)  # Marcar como no visitado al hacer backtracking
 
 def es_valido_para_agregar(v, orden_actual, grafo):
     # Verifica si se puede agregar el vértice v al orden actual
