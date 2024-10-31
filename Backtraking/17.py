@@ -1,52 +1,43 @@
-from grafo import Grafo
-def submarinos(matriz):
-    g = Grafo()
-    submarinos = []
-    # construimos el grafo de las posiciones de los submarinos, en este caso los vertices son las coordenadas de cada cuadradito del tablero
-    for i in range(len(matriz)):
-        for j in range(len(matriz[i])): #si hay un subamrino lo appendeo
-            if matriz[i][j]: submarinos.append((i, j))
-            g.agregar_vertice((i,j)) # agrego coordenadas lo agrego como vertice
-            if i-2 >= 0: #agrego conexiones con celdas vecinas que pueden llegar a ser iluminadas osea de radio de 2 y luego de radio de 1
-                g.agregar_arista((i-2, j), (i, j))
-                if j-1 >= 0:g.agregar_arista((i-2, j-1), (i, j))
-                if j-2 >= 0: g.agregar_arista((i-2, j-2), (i, j))
-                if j+2 < len(matriz[i-1]):g.agregar_arista((i-2, j+2), (i, j))
-                if j+1 < len(matriz[i-1]):g.agregar_arista((i-2, j+1), (i, j))
-            if i-1 >= 0:
-                g.agregar_arista((i-1, j), (i, j))
-                if j-1 >= 0:g.agregar_arista((i-1, j-1), (i, j))
-                if j-2 >= 0: g.agregar_arista((i-1, j-2), (i, j))
-                if j+1 < len(matriz[i-1]):g.agregar_arista((i-1, j+1), (i, j))
-                if j+2 < len(matriz[i-1]):g.agregar_arista((i-1, j+2), (i, j))
-            if j-2 >= 0: g.agregar_arista((i, j-2), (i, j))
-            if j-1 >= 0: g.agregar_arista((i, j-1), (i, j))
-    return iluminar_submarinos(g, g.obtener_vertices(), 0, [], submarinos, submarinos)
+def iluminar_con_faro(matriz, x, y):
+    n = len(matriz)
+    m = len(matriz[0])
+    cobertura = []
+    # Marcar las celdas en un radio de 2 alrededor de (x, y)
+    for i in range(max(0, x-2), min(n, x+3)):
+        for j in range(max(0, y-2), min(m, y+3)):
+            if matriz[i][j]:
+                matriz[i][j] = False  # Marcar la celda como iluminada
+                cobertura.append((i, j))  # Guardar la celda cubierta para restaurarla después
+    return cobertura
 
-def iluminar_submarinos(g, vertices, ind_vertice, sol_actual, mejor_sol, submarinos):
-    if len(sol_actual) >= len(mejor_sol):
-        return mejor_sol
-    if esSolucion(g, sol_actual, submarinos):
-        return sol_actual[:]
-    if ind_vertice >= len(vertices):
-        return mejor_sol
-    sol_actual.append(vertices[ind_vertice])
-    agregando_vertice = iluminar_submarinos(g, vertices, ind_vertice+1, sol_actual, mejor_sol, submarinos)
-    if len(agregando_vertice) < len(mejor_sol):
-        mejor_sol = agregando_vertice
-    sol_actual.remove(vertices[ind_vertice])
-    quitando_vertice = iluminar_submarinos(g, vertices, ind_vertice+1, sol_actual, mejor_sol, submarinos)
-    if len(quitando_vertice) < len(mejor_sol):
-        mejor_sol = quitando_vertice
-    return mejor_sol
+def restaurar_iluminacion(matriz, cobertura):
+    for (i, j) in cobertura:
+        matriz[i][j] = True
 
-def esSolucion(g, solucion_candidata, submarinos):
-    for sub in submarinos:
-        esta_iluminado = False
-        for v in solucion_candidata:
-            if g.estan_unidos(v, sub) or v == sub:
-                esta_iluminado = True
-                break
-        if not esta_iluminado:
-            return False
-    return True
+def backtrack(matriz, faros, min_faroles):
+    # Si todos los submarinos han sido iluminados, devuelve la cantidad actual de faros
+    if not any(any(row) for row in matriz):
+        return min(len(faros), min_faroles)
+
+    n = len(matriz)
+    m = len(matriz[0])
+
+    # Probar colocar un faro en cada posición y continuar con backtracking
+    for i in range(n):
+        for j in range(m):
+            if matriz[i][j]:  # Colocar un faro solo donde haya un submarino
+                # Iluminar la matriz desde la posición (i, j)
+                cobertura = iluminar_con_faro(matriz, i, j)
+                faros.append((i, j))
+
+                # Llamada recursiva para buscar la solución mínima
+                min_faroles = backtrack(matriz, faros, min_faroles)
+
+                # Restaurar el estado de la matriz y remover el faro (backtracking)
+                restaurar_iluminacion(matriz, cobertura)
+                faros.pop()
+
+    return min_faroles
+
+def minimo_de_faroles(matriz):
+    return backtrack(matriz, [], float('inf'))
