@@ -1,25 +1,21 @@
 def mst_min(grafo):
-    j=[]
+    x=[]
     aristas=grafo.obtener_aristas()
     vertices=grafo.obtener_vertices()
 
-    problema = pulp.LpProblem("mst_minimize",pulp.LpMinimize)
+    prob = pulp.LpProblem("MinimumSpanningTree", pulp.LpMinimize)
 
-    #cada arista del grafo es una variable binaria
-    for (v,w) in aristas:
-        j[(v,w)]=pulp.LpVariable(f"j{(v,w)}",cat="Binary")
+# Variables: una para cada arista (i, j)
+    x = pulp.LpVariable.dicts("x", edges, cat="Binary")
 
-    #no me acuerdo si existia el metodo obtener peso :P pero de ultima 
-    #la implementation seria la misma solo que hacemos v=>adyacenteW
-    #obtener_peso(v,w)
-    for (v,w) in aristas:
-        problema +=pulp.Sumatoria(grafo.obtener_peso()*j[a])
+    # Función objetivo: minimizar la suma de los pesos de las aristas seleccionadas
+    prob += pulp.lpSum(weights[(i, j)] * x[(i, j)] for (i, j) in edges)
 
-    #ahora tenemos que asegurar que eun vertice se conecte con una arista
-    for v in vertices:
-        adyacentes=grafo.adyacentes(v)
-        
-        problema+=pulp.LpSum()
+    # Restricción de número de aristas: |V| - 1
+    prob += pulp.lpSum(x[(i, j)] for (i, j) in edges) == len(vertices) - 1
+
+    # Resolver el problema
+    prob.solve()
 
     #incompleto
     problema.solve()
