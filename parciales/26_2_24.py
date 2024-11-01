@@ -158,46 +158,34 @@ def verificar_clausulas(clausulas, asignacion):
 # dp[i][j]=max(dp[i−1][j]−Ti,j ,dp[i][j−1]−Ti,j)
 
 def max_life_path(matrix, V):
-    n = len(matrix)
-    m = len(matrix[0])
+    n, m = len(matrix), len(matrix[0])
     
-    # dp[i][j] will store the maximum life at position (i, j)
-    dp = [[-1] * m for _ in range(n)]
-    parent = [[None] * m for _ in range(n)]
+    # Crear la matriz DP inicializada con un valor negativo para indicar inalcanzabilidad
+    dp = [[-float('inf')] * m for _ in range(n)]
+    dp[0][0] = V - matrix[0][0]  # Vida inicial menos el costo de la primera casilla
     
-    # Initialize the starting position
-    dp[0][0] = V - matrix[0][0]  # Reduce life by T[0][0]
-
-    # Fill the dp table
+    # Llenar la matriz DP
     for i in range(n):
         for j in range(m):
-            if i == 0 and j == 0:
-                continue
-            
-            # Calculate life from the top
-            if i > 0 and dp[i-1][j] >= 0:  # Check if coming from above is possible
-                life_from_top = dp[i-1][j] - matrix[i][j]
-                if life_from_top > dp[i][j]:  # We want the max life
-                    dp[i][j] = life_from_top
-                    parent[i][j] = (i-1, j)
-
-            # Calculate life from the left
-            if j > 0 and dp[i][j-1] >= 0:  # Check if coming from the left is possible
-                life_from_left = dp[i][j-1] - matrix[i][j]
-                if life_from_left > dp[i][j]:  # We want the max life
-                    dp[i][j] = life_from_left
-                    parent[i][j] = (i, j-1)
-
-    # Maximum life at the bottom-right corner
-    max_life = dp[n-1][m-1]
-
-    # Reconstruct the path if reachable
+            if i > 0 and dp[i - 1][j] > 0:
+                dp[i][j] = max(dp[i][j], dp[i - 1][j] - matrix[i][j])
+            if j > 0 and dp[i][j - 1] > 0:
+                dp[i][j] = max(dp[i][j], dp[i][j - 1] - matrix[i][j])
+    
+    # La vida máxima para llegar a (n-1, m-1)
+    max_life = dp[n - 1][m - 1]
+    
+    # Reconstrucción del camino desde (n-1, m-1) hasta (0, 0)
     path = []
-    if max_life >= 0:
-        x, y = n-1, m-1
-        while (x, y) is not None:
-            path.append((x, y))
-            x, y = parent[x][y] if parent[x][y] else (None, None)
-        path.reverse()  # Reverse the path to start from the beginning
-
+    if max_life > 0:  # Solo reconstruimos si es alcanzable
+        i, j = n - 1, m - 1
+        while i > 0 or j > 0:
+            path.append((i, j))
+            if i > 0 and dp[i][j] == dp[i - 1][j] - matrix[i][j]:
+                i -= 1
+            else:
+                j -= 1
+        path.append((0, 0))  # Agregar la posición inicial
+        path.reverse()  # Invertir para obtener el camino en orden
+    
     return max_life, path
