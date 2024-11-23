@@ -12,55 +12,39 @@
 
 #es parecido al de inversiones :)
 
-def merge_count_superaciones(izquierda, derecha):
-    i = j = 0
-    superaciones = 0
-    resultados = []
+def determinar_adelantos(arr): 
+    arrAnterior = sorted(arr, key=lambda x: x[1])
+    posiciones_actuales = {jugador: idx for idx, (jugador, _) in enumerate(arr)}
+    adelantos = {jugador: 0 for jugador, _ in arr}
     
-    while i < len(izquierda) and j < len(derecha):
-        # Si el jugador de la izquierda tiene un ranking anterior peor que el de la derecha,
-        # entonces ha superado a todos los jugadores de la derecha hasta ese punto.
-        if izquierda[i][1] < derecha[j][1]:
-            resultados.append(izquierda[i])
-            superaciones += j  # Todos los jugadores de derecha han sido superados por el de izquierda
-            i += 1
-        else:
-            resultados.append(derecha[j])
-            j += 1
+    def contar_inversiones(arr, ini, fin):
+        if ini >= fin:
+            return 0, arr[ini:fin+1] if ini == fin else []
+        
+        medio = (ini + fin) // 2
+        inv_izq, izq_ordenado = contar_inversiones(arr, ini, medio)
+        inv_der, der_ordenado = contar_inversiones(arr, medio + 1, fin)
+        
+        i = j = 0
+        inversiones = inv_izq + inv_der
+        merged = []
+        
+        while i < len(izq_ordenado) and j < len(der_ordenado):
+            if posiciones_actuales[izq_ordenado[i][0]] <= posiciones_actuales[der_ordenado[j][0]]:
+                merged.append(izq_ordenado[i])
+                i += 1
+            else:
+                adelantos[der_ordenado[j][0]] += len(izq_ordenado) - i
+                merged.append(der_ordenado[j])
+                inversiones += len(izq_ordenado) - i
+                j += 1
+        
+        merged.extend(izq_ordenado[i:])
+        merged.extend(der_ordenado[j:])
+        
+        return inversiones, merged
     
-    # Agregar el resto de jugadores de la izquierda o derecha
-    while i < len(izquierda):
-        resultados.append(izquierda[i])
-        superaciones += j  # Los jugadores de derecha también han sido superados por los de izquierda
-        i += 1
-    while j < len(derecha):
-        resultados.append(derecha[j])
-        j += 1
-    
-    return resultados, superaciones
-
-
-def divide_y_conquista(jugadores):
-    if len(jugadores) <= 1:
-        return jugadores, 0
-    mitad = len(jugadores) // 2
-    izquierda, izquierda_superaciones = divide_y_conquista(jugadores[:mitad])
-    derecha, derecha_superaciones = divide_y_conquista(jugadores[mitad:])
-    
-    combinados, superaciones = merge_count_superaciones(izquierda, derecha)
-    
-    return combinados, izquierda_superaciones + derecha_superaciones + superaciones
-
-
-def contar_superaciones(jugadores):
-    jugadores_ordenados, total_superaciones = divide_y_conquista(jugadores)
-    
-    # Devolver el número de superaciones por jugador
-    superaciones_por_jugador = {}
-    for i, (nombre, _) in enumerate(jugadores_ordenados):
-        superaciones_por_jugador[nombre] = total_superaciones - i
-    
-    return superaciones_por_jugador
+    contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1)
 
 # O(nlogn)
 
