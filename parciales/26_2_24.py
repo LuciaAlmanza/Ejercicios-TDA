@@ -45,6 +45,7 @@ def determinar_adelantos(arr):
         return inversiones, merged
     
     contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1)
+    return adelantos
 
 # O(nlogn)
 
