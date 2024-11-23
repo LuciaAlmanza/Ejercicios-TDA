@@ -1,37 +1,37 @@
 from balanza import *
 
 def encontrar_joya(joyas):
-    """
-    Encuentra la joya verdadera utilizando un enfoque de división y conquista.
-    joyas: una lista con las joyas, donde una pesa más que las demás.
-    Retorna el índice de la joya verdadera.
-    """
-    return encontrar_joya_recursivo(joyas, 0, len(joyas) - 1)
+    aux = []
+    ubicacion_de_joyas = llenar_indices(joyas, aux)
+    return _encontrar_joyas(joyas, ubicacion_de_joyas, 0)
 
-def encontrar_joya_recursivo(joyas, inicio, fin):
-    # Caso base: si solo queda una joya, es la verdadera
-    if inicio == fin:
-        return inicio
-    
-    # Dividimos el conjunto de joyas en dos mitades
-    mitad = (fin - inicio + 1) // 2
-    conjunto_izq = joyas[inicio:inicio + mitad]
-    conjunto_der = joyas[inicio + mitad:inicio + 2 * mitad]
-    
-    # Usamos la balanza para comparar las dos mitades
-    resultado = balanza(conjunto_izq, conjunto_der)
-    
-    if resultado == 1:
-        # El lado izquierdo es más pesado
-        return encontrar_joya_recursivo(joyas, inicio, inicio + mitad - 1)
-    elif resultado == -1:
-        # El lado derecho es más pesado
-        return encontrar_joya_recursivo(joyas, inicio + mitad, inicio + 2 * mitad - 1)
+def llenar_indices(origen, destino):
+    for i in range(len(origen)):
+        destino.append(i)
+    return destino
+
+def _encontrar_joyas(joyas, indices_joyas, cantidad_extraidas):
+    if len(joyas) == 1: return indices_joyas[0]
+
+    medio = (len(joyas))//2
+    izq, der = joyas[:medio], joyas[medio:]
+
+    if len(izq) > len(der):
+        izq = joyas[1:medio]
+        joya_extraida = cantidad_extraidas
+
+    elif len(izq) < len(der):
+        der = joyas[medio:len(joyas)-1]
+        joya_extraida = (len(joyas) - 1 + cantidad_extraidas)
+
+    res = balanza(izq, der) # type: ignore
+
+    if res == 1:
+        return _encontrar_joyas(izq, indices_joyas[:medio], len(der))
+    elif res == -1:
+        return _encontrar_joyas(der, indices_joyas[medio:], len(izq))
     else:
-        # Si las dos mitades pesan lo mismo, la joya verdadera está en la parte restante
-        return inicio + 2 * mitad
+        return joya_extraida
     
 #O(logn)
 
-#Explicacion: la recurcion la hice asi por si el arreglo tiene longuitud impar. Sino tendriamos dos casos, si es par o impar
-# y seria mucho mas largo. Es dificil de entender pero simplifica el codigo.

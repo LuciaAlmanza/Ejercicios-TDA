@@ -1,48 +1,27 @@
 def merge_sort(arr):
-    tam = len(arr)
-
-    if tam == 0:
+    if len(arr) <= 1:
         return arr
-
-    final = tam - 1
-    return dyc_merge_sort(arr, 0, final)
-
-def dyc_merge_sort(arr, inicio, final):
-
-    if inicio == final:
-        return arr
-
-    mitad = (inicio + final) // 2
-    dyc_merge_sort(arr, inicio, mitad)
-    dyc_merge_sort(arr, mitad+1, final)
-
-    return merge(arr, inicio, mitad, final)
-
-def merge(arr, inicio, mitad, final):
-
-    i = inicio
-    j = mitad + 1
-
-    aux = []
-
-    while i <= mitad and j <= final:
-        if arr[i] > arr[j]:
-            aux.append(arr[j])
-            j = j+1
-        else:
-            aux.append(arr[i])
-            i = i+1
-        
-    while i <= mitad:
-        aux.append(arr[i])
-        i = i+1
     
-    while j <= final:
-        aux.append(arr[j])
-        j = j+1
+    medio = len(arr) // 2
+    izquierda = merge_sort(arr[:medio])
+    derecha = merge_sort(arr[medio:])
+    
+    return merge(izquierda, derecha)
 
-    for indice, val in enumerate(aux):
-        arr[inicio + indice] = val
-    return arr
+def merge(izquierda, derecha):
+    resultado = []
+    i = j = 0
+    
+    while i < len(izquierda) and j < len(derecha):
+        if izquierda[i] < derecha[j]:
+            resultado.append(izquierda[i])
+            i += 1
+        else:
+            resultado.append(derecha[j])
+            j += 1
+    resultado.extend(izquierda[i:])
+    resultado.extend(derecha[j:])
+    
+    return resultado
 
 # O(nlogn)
