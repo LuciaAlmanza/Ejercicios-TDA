@@ -4,15 +4,16 @@
 # Por ejemplo, que a ^(h)· a^(k) = a ^(h+k ).
 
 def potencia(b, n):
-    # Caso base: cualquier número elevado a la potencia de 0 es 1
     if n == 0:
         return 1
-    # Caso recursivo
-    if n % 2 == 0:  # n es par
-        half_pow = potencia(b, n // 2)  # Divide el problema
-        return half_pow * half_pow  # Combina las soluciones
-    else:  # n es impar
-        return b * potencia(b, n - 1)  # Un caso más simple
+    elif n == 1:
+        return b
+
+    medio = potencia(b, n // 2)
+    if n % 2 == 0:
+        return medio * medio # b^n = b^(n/2) * b^(n/2)
+    else:
+        return b * medio* medio # b^n = b * b^((n-1)/2) * b^((n-1)/2)
 
     
 # O(logn)
