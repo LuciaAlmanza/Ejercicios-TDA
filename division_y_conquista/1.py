@@ -1,40 +1,28 @@
-
 def elemento_desordenado(arr):
-    inicio = 0
-    final = len(arr) - 1
-    return dividir_y_encontrar_desubicado(arr, inicio, final)
+    if fuera_de_lugar(arr, 0):
+        return arr[0]
+    return elemento_desordenado_rec(arr, 0, len(arr)-1)
 
+def fuera_de_lugar(arr, pos):
+    if pos == 0:
+        return arr[0] > arr[1] and (len(arr) < 3 or arr[1] < arr[2])
+    if pos == len(arr)-1:
+        return arr[pos] < arr[pos-1] and (len(arr) < 3 or arr[pos-2] < arr[pos-1])
+    return arr[pos-1] < arr[pos+1] and (arr[pos] > arr[pos+1] or arr[pos] < arr[pos-1])
 
-def obtener_desubicado_2_elementos(izq, der):
-    if izq > der:
-        return izq
-    return None
+def elemento_desordenado_rec(arr, ini, fin):
+    medio = (ini+fin) // 2
 
-def dividir_y_encontrar_desubicado(arr, inicio, final):
+    if fin < ini:
+        return 0
 
-    if inicio == final:
-        return None
-
-    
-    if final == inicio + 1:
-        return obtener_desubicado_2_elementos(arr[inicio], arr[final])
-
-    medio = (inicio + final) // 2
-
-    if arr[medio] < arr[medio - 1]:
-        return arr[medio-1]
-
-    if arr[medio] > arr[medio + 1]:
+    if fuera_de_lugar(arr, medio):
         return arr[medio]
-  
-    desubicado_izq = dividir_y_encontrar_desubicado(arr, inicio, medio)
-    desubicado_der = dividir_y_encontrar_desubicado(arr, medio + 1, final)
+    
+    izq = elemento_desordenado_rec(arr, ini, medio-1)
+    der = elemento_desordenado_rec(arr, medio+1, fin)
 
-    if desubicado_izq != None:
-        return desubicado_izq
-    if desubicado_der != None:
-        return desubicado_der
-    return None
+    return izq + der
 
 
 #Complejidad: O(n)
