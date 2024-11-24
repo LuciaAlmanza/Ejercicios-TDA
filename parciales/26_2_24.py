@@ -16,10 +16,10 @@ def determinar_adelantos(arr):
     arrAnterior = sorted(arr, key=lambda x: x[1])
     posiciones_actuales = {jugador: idx for idx, (jugador, _) in enumerate(arr)}
     adelantos = {jugador: 0 for jugador, _ in arr}
-    contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1,posiciones_actuales)
+    contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1,posiciones_actuales,adelantos)
     return adelantos
 
-def contar_inversiones(arr, ini, fin, posiciones_actuales):
+def contar_inversiones(arr, ini, fin, posiciones_actuales,adelantos):
         if ini >= fin:
             return 0, arr[ini:fin+1] if ini == fin else []
         
