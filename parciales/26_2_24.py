@@ -16,14 +16,16 @@ def determinar_adelantos(arr):
     arrAnterior = sorted(arr, key=lambda x: x[1])
     posiciones_actuales = {jugador: idx for idx, (jugador, _) in enumerate(arr)}
     adelantos = {jugador: 0 for jugador, _ in arr}
-    
-    def contar_inversiones(arr, ini, fin):
+    contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1,posiciones_actuales)
+    return adelantos
+
+def contar_inversiones(arr, ini, fin, posiciones_actuales):
         if ini >= fin:
             return 0, arr[ini:fin+1] if ini == fin else []
         
         medio = (ini + fin) // 2
-        inv_izq, izq_ordenado = contar_inversiones(arr, ini, medio)
-        inv_der, der_ordenado = contar_inversiones(arr, medio + 1, fin)
+        inv_izq, izq_ordenado = contar_inversiones(arr, ini, medio,posiciones_actuales)
+        inv_der, der_ordenado = contar_inversiones(arr, medio + 1, fin,posiciones_actuales)
         
         i = j = 0
         inversiones = inv_izq + inv_der
@@ -43,10 +45,6 @@ def determinar_adelantos(arr):
         merged.extend(der_ordenado[j:])
         
         return inversiones, merged
-    
-    contar_inversiones(arrAnterior, 0, len(arrAnterior) - 1)
-    return adelantos
-
 # O(nlogn)
 
 # 3. El K-core de un grafo es el subgrafo del mismo en el cuál todos los vértices tienen grados mayor o igual a K. Implementar
