@@ -43,22 +43,37 @@ def longest_path_ordered_graph(vertices, edges):
 # justificar la complejidad del algoritmo implementado. Justificar por qué se trata de un algoritmo greedy. Indicar si el
 # algoritmo siempre da solución óptima. Si lo es, explicar detalladamente, sino dar un contraejemplo.
 
-def max_independent_set(raiz):
-    incluido, excluido = dfs(raiz)
-    return max(incluido, excluido)
-
-def dfs(nodo):
-    if not nodo:
-        return (0, 0)
-
-    nodo_incluido = 1
-    nodo_excluido = 0
-
-    for hijo in nodo.hijos:
-        incluido, excluido = dfs(hijo)
-        nodo_incluido += excluido #si incluimos este nodo, no incluimos hijos
-        nodo_excluido += max(incluido, excluido)  #tomamos el mejor de incluir o no incluir el hijo
-    return (nodo_incluido, nodo_excluido)
+def max_independent_set(tree, root):
+    """
+    Obtiene el máximo Independent Set en un árbol.
+    :param tree: Diccionario representando el árbol (adyacencia).
+    :param root: Raíz del árbol.
+    :return: Conjunto independiente máximo.
+    """
+    # Almacenar los resultados del conjunto independiente
+    independent_set = set()
+    visited = set()
+    
+    def dfs(node, parent):
+        """
+        Recorrido DFS en postorden.
+        :param node: Nodo actual.
+        :param parent: Padre del nodo actual.
+        """
+        # Recorrer los hijos del nodo
+        include = True  # Por defecto, tratamos de incluir este nodo
+        for child in tree[node]:
+            if child != parent:
+                dfs(child, node)
+                # Si algún hijo está en el conjunto independiente, este nodo no puede estar
+                if child in independent_set:
+                    include = False
+        # Si no hay conflictos, incluimos el nodo actual
+        if include:
+            independent_set.add(node)
+    
+    dfs(root, None)
+    return independent_set
 
 # O(n)
 
