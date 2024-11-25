@@ -43,30 +43,22 @@ def longest_path_ordered_graph(vertices, edges):
 # justificar la complejidad del algoritmo implementado. Justificar por qué se trata de un algoritmo greedy. Indicar si el
 # algoritmo siempre da solución óptima. Si lo es, explicar detalladamente, sino dar un contraejemplo.
 
-def dfs(grafo, v, visitados, conjunto_independiente):
-    visitados.add(v)
-    conjunto_independiente.add(v)
+def max_independent_set(raiz):
+    incluido, excluido = dfs(raiz)
+    return max(incluido, excluido)
 
-    for vecino in grafo.adyacentes(v):
-        if vecino not in visitados:
-            dfs(grafo, vecino, visitados, conjunto_independiente)
+def dfs(nodo):
+    if not nodo:
+        return (0, 0)
 
-    # Eliminar los vecinos del conjunto independiente
-    for vecino in grafo.adyacentes(v):
-        if vecino in conjunto_independiente:
-            conjunto_independiente.remove(vecino)
+    nodo_incluido = 1
+    nodo_excluido = 0
 
-
-def independent_set_maximo(grafo):
-    vertices = grafo.obtener_vertices()
-    conjunto_independiente = set()
-    visitados = set()
-
-    # Empezar el DFS desde un vértice arbitrario si hay vertices en el grafo
-    if vertices:
-        dfs(grafo, vertices[0], visitados, conjunto_independiente)
-
-    return conjunto_independiente
+    for hijo in nodo.hijos:
+        incluido, excluido = dfs(hijo)
+        nodo_incluido += excluido #si incluimos este nodo, no incluimos hijos
+        nodo_excluido += max(incluido, excluido)  #tomamos el mejor de incluir o no incluir el hijo
+    return (nodo_incluido, nodo_excluido)
 
 # O(n)
 
