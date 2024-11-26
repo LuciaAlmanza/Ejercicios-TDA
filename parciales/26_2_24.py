@@ -71,57 +71,48 @@ def k_core(grafo, K):
 # (pudiendo ser complementos de variables), existe alguna asignación de valores de las variables tal que la disyunción de
 # todas las cláusulas (que son todas conjunciones) evalúan a true.
 
-def resolver_3SAT(clausulas):
-    variables = obtener_variables(clausulas)
-    asignacion = {}
-    return backtrack(clausulas, variables, asignacion, 0)
-
-def obtener_variables(clausulas):
-    variables = set()
+def tres_sat(clausulas):
+    grafo = Grafo(False)
+    vars = set()
     for clausula in clausulas:
-        for literal in clausula:
-            variables.add(abs(literal))  # Añadimos solo el valor absoluto de la variable
-    return list(variables)
-
-def backtrack(clausulas, variables, asignacion, indice):
-    # Si ya asignamos todas las variables, verificamos si la fórmula es satisfactible
-    if indice == len(variables):
-        return verificar_clausulas(clausulas, asignacion)
-    
-    # Seleccionamos la siguiente variable a asignar
-    var = variables[indice]
-    
-    # Intentamos asignar True a la variable y probamos si la fórmula se cumple
-    asignacion[var] = True
-    if backtrack(clausulas, variables, asignacion, indice + 1):
-        return True
-    
-    # Intentamos asignar False a la variable y probamos si la fórmula se cumple
-    asignacion[var] = False
-    if backtrack(clausulas, variables, asignacion, indice + 1):
-        return True
-    
-    # Deshacer la asignación para este nivel de backtracking
-    del asignacion[var]
-    return False
-
-def verificar_clausulas(clausulas, asignacion):
+        for var in clausula:
+            vars.add(var)
+            grafo.agregar_vertice(var)
     for clausula in clausulas:
-        satisfactible = False
-        for literal in clausula:
-            var = abs(literal)
-            valor_literal = asignacion.get(var, False)
-            # Si el literal es negativo, invertimos su valor
-            if literal < 0:
-                valor_literal = not valor_literal
-            # Si algún literal en la cláusula es verdadero, la cláusula es satisfactible
-            if valor_literal:
-                satisfactible = True
-                break
-        # Si encontramos una cláusula que no es satisfactible, la fórmula no es válida
-        if not satisfactible:
-            return False
-    # Todas las cláusulas son satisfactibles
+        for i in range(3):
+            for j in range(i + 1, 3):
+                grafo.agregar_arista(clausula[i], clausula[j])
+    for var in vars:
+        if not(var) in vars and not grafo.estan_unidos(var, not(var)):
+            grafo.agregar_arista(var, not(var))
+    IS = independent_set(grafo)
+    return [v for v in IS]
+
+def independent_set(grafo):
+    vertices = grafo.obtener_vertices()
+    max_conjunto = []
+    independent_set_rec(grafo, vertices, 0, [], max_conjunto)
+    return max_conjunto
+
+
+def independent_set_rec(grafo, vertices, v, conjunto, max_conjunto):
+    if v == len(grafo):
+        if es_compatible(grafo, conjunto) and len(conjunto) > len(max_conjunto):
+            max_conjunto[:] = conjunto[:]
+        return
+    
+    conjunto.append(vertices[v])
+    independent_set_rec(grafo, vertices, v + 1, conjunto, max_conjunto)
+    conjunto.pop()
+    independent_set_rec(grafo, vertices, v + 1, conjunto, max_conjunto)
+
+def es_compatible(grafo, conjunto):
+    for v in conjunto:
+        for w in conjunto:
+            if v == w:
+                continue
+            elif grafo.estan_unidos(v,w):
+                return False
     return True
 
 # Se tiene una matriz de n × m casilleros, en la cual empezamos en la posición (0, 0) (arriba a la izquierda) y queremos

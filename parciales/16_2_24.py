@@ -37,33 +37,34 @@ def max_ganancia(farmacos, L):
 # 3.Implementar un algoritmo que reciba un grafo no dirigido y un número k, y devuelva un ciclo de tamaño exactamente k
 # del grafo, si es que existe.
 
-def backtrack(grafo, ciclo, actual, k):
-    if len(ciclo) == k:
-        # Verificar si el último vértice se conecta al primero
-        if ciclo[0] in grafo.adyacentes(actual):
-            return ciclo + [ciclo[0]]  # Retorna el ciclo completo
-        return None
-
-    for vecino in grafo.adyacentes(actual):
-        if vecino not in ciclo:  # Evitar vértices repetidos
-            ciclo.append(vecino)  # Añadir vértice al ciclo
-            resultado = backtrack(grafo, ciclo, vecino, k)
-            if resultado:  # Si se encontró un ciclo válido
-                return resultado
-            ciclo.pop()  # Retroceder
-
-    return None  # No se encontró ciclo
-
-
-def encontrar_ciclo(grafo, k):
-    # Probar desde cada vértice del grafo
-    for vertice in grafo.obtener_vertices():
-        ciclo_inicial = [vertice]
-        resultado = backtrack(grafo, ciclo_inicial, vertice, k)
-        if resultado:
+def ciclo_k(grafo, k):
+    for v in grafo:
+        resultado = []
+        if bt(grafo, k, resultado, set(), v, v):
             return resultado
+    return None
 
-    return None  
+def bt(grafo, k, posible_solucion, visitados, v_inicio, v):
+    posible_solucion.append(v)
+    visitados.add(v)
+
+    if len(posible_solucion) == k:
+        if v_inicio in grafo.adyacentes(v):
+            posible_solucion.append(v_inicio)
+            return True
+        else:
+            posible_solucion.pop()
+            visitados.remove(v)
+            return False
+
+    for w in grafo.adyacentes(v):
+        if w not in visitados:
+            if bt(grafo, k, posible_solucion, visitados, v_inicio, w):
+                return True
+
+    posible_solucion.pop()
+    visitados.remove(v)
+    return False
 
 # En clase vimos una solución óptima del problema del cambio utilizando programación dinámica. Ahora planteamos un
 # problema similar: Implementar un algoritmo que dado un set de monedas posibles y una cantidad de cambio a dar,
